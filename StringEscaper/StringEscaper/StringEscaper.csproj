@@ -77,6 +77,7 @@
     <Compile Include="Escaper\NoemaxEscaper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Escaper\ResourceEscaper.cs" />
     <Compile Include="Escaper\XmlEscaper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

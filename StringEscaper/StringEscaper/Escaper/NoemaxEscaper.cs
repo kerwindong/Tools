@@ -9,19 +9,19 @@ namespace StringEscaper
     public class NoemaxEscaper : IEscaper
     {
 
-        private bool needOthers = false;
-        private string othersMemo = "";
+        private bool hasOtherInputs = false;
+        private string otherInputsText = "";
 
-        public bool NeedOthers
+        public bool HasOtherInputs
         {
-            get { return needOthers; }
-            set { needOthers = value; }
+            get { return hasOtherInputs; }
+            set { hasOtherInputs = value; }
         }
 
-        public string OthersMemo
+        public string OtherInputsText
         {
-            get { return othersMemo; }
-            set { othersMemo = value; }
+            get { return otherInputsText; }
+            set { otherInputsText = value; }
         }
 
         // Methods

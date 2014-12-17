@@ -47,19 +47,19 @@ namespace StringEscaper.Escaper
 
         private string mapperFormatterValue = string.Empty;
 
-        private bool needOthers = false;
-        private string othersMemo = "";
+        private bool hasOtherInputs = false;
+        private string otherInputsText = "";
 
-        public bool NeedOthers
+        public bool HasOtherInputs
         {
-            get { return needOthers; }
-            set { needOthers = value; }
+            get { return hasOtherInputs; }
+            set { hasOtherInputs = value; }
         }
 
-        public string OthersMemo
+        public string OtherInputsText
         {
-            get { return othersMemo; }
-            set { othersMemo = value; }
+            get { return otherInputsText; }
+            set { otherInputsText = value; }
         }
 
         public Mapper()
@@ -68,9 +68,9 @@ namespace StringEscaper.Escaper
 
             mapperFormatterValue = ConfigManager.Get().MapperConfig.MapperFormatter.Value;
 
-            needOthers = true;
+            hasOtherInputs = true;
 
-            othersMemo = TARGET_CLASS_NAME;
+            otherInputsText = TARGET_CLASS_NAME;
         }
 
         public string Escape(string str, params string[] args)

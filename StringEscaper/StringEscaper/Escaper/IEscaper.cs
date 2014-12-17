@@ -9,8 +9,8 @@ namespace StringEscaper
 
         string Name { set; get; }
 
-        bool NeedOthers { set; get; }
+        bool HasOtherInputs { set; get; }
 
-        string OthersMemo { set; get; }
+        string OtherInputsText { set; get; }
     }
 }

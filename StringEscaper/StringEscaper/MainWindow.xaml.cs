@@ -67,11 +67,11 @@ namespace StringEscaper
                 {
                     Escaper = Escapers.Find(d => d.Name == selected.Content);
 
-                    if (Escaper.NeedOthers)
+                    if (Escaper.HasOtherInputs)
                     {
                         OthersBoxLabel.Visibility = Visibility.Visible;
                         OthersBox.Visibility = Visibility.Visible;
-                        OthersBoxLabel.Content = Escaper.OthersMemo;
+                        OthersBoxLabel.Content = Escaper.OtherInputsText;
                     }
                     else
                     {
@@ -100,7 +100,7 @@ namespace StringEscaper
 
         void EscapeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Escaper.NeedOthers && !string.IsNullOrWhiteSpace(OthersBox.Text))
+            if (Escaper.HasOtherInputs && !string.IsNullOrWhiteSpace(OthersBox.Text))
             {
                 var args = OthersBox.Text.Split(',');
 
