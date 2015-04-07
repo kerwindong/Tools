@@ -4,9 +4,9 @@ using System.Xml;
 
 using Noemax.FastInfoset;
 
-namespace StringEscaper
+namespace StringUtility
 {
-    public class NoemaxEscaper : IEscaper
+    public class NoemaxUtility : IUtility
     {
 
         private bool hasOtherInputs = false;
@@ -25,12 +25,16 @@ namespace StringEscaper
         }
 
         // Methods
-        public NoemaxEscaper()
+        public NoemaxUtility()
         {
-            this.Name = "Noemax Escaper";
+            this.Name = "Noemax";
+
+            MainName = "Decode";
+
+            AdvanceName = "";
         }
 
-        public string Escape(string str, params string[] args)
+        public string Main(string str, params string[] args)
         {
             string str2 = string.Empty;
             if (!string.IsNullOrWhiteSpace(str))
@@ -55,13 +59,17 @@ namespace StringEscaper
             return str2;
         }
 
-        public string Unescape(string str)
+        public string Advance(string str)
         {
             return "Not Implemented";
         }
 
         // Properties
         public string Name { get; set; }
+
+        public string MainName { set; get; }
+
+        public string AdvanceName { set; get; }
     }
 
 

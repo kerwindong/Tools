@@ -8,8 +8,8 @@
     <ProjectGuid>{14634D33-96A8-4F7C-AAE3-E1571B023E93}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StringEscaper</RootNamespace>
-    <AssemblyName>StringEscaper</AssemblyName>
+    <RootNamespace>StringUtility</RootNamespace>
+    <AssemblyName>StringUtility</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -44,7 +44,7 @@
     <ApplicationIcon>1397202756_93323.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>StringEscaper.App</StartupObject>
+    <StartupObject>StringUtility.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Noemax.FastInfoset.Net4">
@@ -71,14 +71,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ConfigManager.cs" />
-    <Compile Include="Escaper\GoogleProtoEscaper.cs" />
-    <Compile Include="Escaper\Mapper.cs" />
-    <Compile Include="Escaper\NoemaxEscaper.cs">
+    <Compile Include="Configuration\ConfigManager.cs" />
+    <Compile Include="Utility\GoogleProtoUtility.cs" />
+    <Compile Include="Utility\CtranUtility.cs" />
+    <Compile Include="Utility\Mapper.cs" />
+    <Compile Include="Utility\NoemaxUtility.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Escaper\ResourceEscaper.cs" />
-    <Compile Include="Escaper\XmlEscaper.cs" />
+    <Compile Include="Utility\WsdlClientUtility.cs" />
+    <Compile Include="Utility\XmlUtility.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -87,14 +88,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Escaper\IEscaper.cs" />
+    <Compile Include="Utility\IUtility.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MapperConfig.cs" />
+    <Compile Include="Configuration\MapperConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

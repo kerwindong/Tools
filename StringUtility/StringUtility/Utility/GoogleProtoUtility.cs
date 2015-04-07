@@ -2,9 +2,9 @@
 using System.IO;
 using System.Text;
 
-namespace StringEscaper
+namespace StringUtility
 {
-    public class GoogleProtoEscaper : IEscaper
+    public class GoogleProtoUtility : IUtility
     {
         private static readonly char[] IDENTIFIER_WRAPPER = new char[] { ' ', '\r', '\n', '\t' };
         private static readonly char[] IDENTIFIER_PREFIX = new char[] { 'p', 'u', 'b', 'l', 'i', 'c' };
@@ -59,12 +59,16 @@ namespace StringEscaper
             set { otherInputsText = value; }
         }
 
-        public GoogleProtoEscaper()
+        public GoogleProtoUtility()
         {
-            Name = "Google Proto Escaper";
+            Name = "Google Proto";
+
+            MainName = "Add Attribute";
+
+            AdvanceName = "";
         }
 
-        public string Escape(string str, params string[] args)
+        public string Main(string str, params string[] args)
         {
             if (string.IsNullOrWhiteSpace(str)) return string.Empty;
 
@@ -137,12 +141,16 @@ namespace StringEscaper
             return dataOut;
         }
 
-        public string Unescape(string str)
+        public string Advance(string str)
         {
             return "not implemented";
         }
 
         public string Name { set; get; }
+
+        public string MainName { set; get; }
+
+        public string AdvanceName { set; get; }
 
         private int AddUsing(int startIndex)
         {
@@ -262,10 +270,10 @@ namespace StringEscaper
                         int wrapperIndex = -1;
 
                         // get { }
-                        int wrapperBeginIndex = LookForward(setgetStartIndex, IDENTIFIER_WRAPPER_BEGIN, 1, IDENTIFIER_WRAPPER_END);
-                        if (wrapperBeginIndex >= 0)
+                        int convertationBeginIndex = LookForward(setgetStartIndex, IDENTIFIER_WRAPPER_BEGIN, 1, IDENTIFIER_WRAPPER_END);
+                        if (convertationBeginIndex >= 0)
                         {
-                            int wrapperEndIndex = LookForward(wrapperBeginIndex, IDENTIFIER_WRAPPER_END, 1, null);
+                            int wrapperEndIndex = LookForward(convertationBeginIndex, IDENTIFIER_WRAPPER_END, 1, null);
                             if (wrapperEndIndex >= 0)
                             {
                                 wrapperIndex = wrapperEndIndex;

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using StringUtility.Configuration;
 
-using English.Site.Common.Configuration;
-
-namespace StringEscaper.Escaper
+namespace StringUtility.Utility
 {
     public class MapperProperty
     {
@@ -13,7 +12,7 @@ namespace StringEscaper.Escaper
         public string PropertyName { set; get; }
     }
 
-    public class Mapper : IEscaper
+    public class Mapper : IUtility
     {
         private static readonly char[] IDENTIFIER_BREAKER = new char[] { '}', ';', '{' };
         private static readonly char[] IDENTIFIER_WRAPPER_BEGIN = new char[] { '{' };
@@ -66,6 +65,10 @@ namespace StringEscaper.Escaper
         {
             name = MAPPER;
 
+            MainName = "Generate Code";
+
+            AdvanceName = "";
+
             mapperFormatterValue = ConfigManager.Get().MapperConfig.MapperFormatter.Value;
 
             hasOtherInputs = true;
@@ -73,7 +76,7 @@ namespace StringEscaper.Escaper
             otherInputsText = TARGET_CLASS_NAME;
         }
 
-        public string Escape(string str, params string[] args)
+        public string Main(string str, params string[] args)
         {
             if (string.IsNullOrWhiteSpace(str)) return string.Empty;
 
@@ -139,7 +142,7 @@ namespace StringEscaper.Escaper
             return dataOut;
         }
 
-        public string Unescape(string str)
+        public string Advance(string str)
         {
             return "not implemented";
         }
@@ -149,6 +152,10 @@ namespace StringEscaper.Escaper
             get { return name; }
             set { name = value; }
         }
+
+        public string MainName { set; get; }
+
+        public string AdvanceName { set; get; }
 
         private int GetClassName(int startIndex)
         {

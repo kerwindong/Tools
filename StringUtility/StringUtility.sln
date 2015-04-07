@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringEscaper", "StringEscaper\StringEscaper.csproj", "{14634D33-96A8-4F7C-AAE3-E1571B023E93}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringUtility", "StringUtility\StringUtility.csproj", "{14634D33-96A8-4F7C-AAE3-E1571B023E93}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -9,9 +9,9 @@ Global
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://kerwindong.visualstudio.com/defaultcollection
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = StringEscaper\\StringEscaper.csproj
-		SccProjectName1 = StringEscaper
-		SccLocalPath1 = StringEscaper
+		SccProjectUniqueName1 = StringUtility\\StringUtility.csproj
+		SccProjectName1 = StringUtility
+		SccLocalPath1 = StringUtility
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86

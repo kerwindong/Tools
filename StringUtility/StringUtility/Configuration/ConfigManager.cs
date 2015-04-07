@@ -3,9 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Xml.Serialization;
 
-using StringEscaper;
-
-namespace English.Site.Common.Configuration
+namespace StringUtility.Configuration
 {
     public static class ConfigManager
     {

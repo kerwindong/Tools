@@ -1,7 +1,7 @@
 ﻿
 using System.Xml.Serialization;
 
-namespace StringEscaper
+namespace StringUtility.Configuration
 {
     [XmlRoot("mapperConfig")]
     public class MapperConfig

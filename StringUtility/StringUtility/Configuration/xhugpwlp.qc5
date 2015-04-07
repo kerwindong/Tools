@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Xml.Serialization;
+
+namespace StringUtility.Configuration
+{
+    [XmlRoot("ctranConfig")]
+    public class CtranConfig
+    {
+        [XmlElement("ckeyFormat")]
+        public CkeyFormatConfig CkeyFormatConfig { set; get; }
+
+        [XmlElement("codeFormat")]
+        public CodeFormatConfig CodeFormatConfig { set; get; }
+    }
+
+    public class CkeyFormatConfig
+    {
+
+    }
+
+    public class CodeFormatConfig
+    {
+
+    }
+}
