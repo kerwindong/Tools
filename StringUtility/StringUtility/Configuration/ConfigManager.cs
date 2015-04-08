@@ -17,6 +17,8 @@ namespace StringUtility.Configuration
     {
         private const string MAPPER_CONFIG = "MapperConfig";
 
+        private const string CTRAN_CONFIG = "CtranConfig";
+
         private string BaseDirectory = string.Empty;
 
         private static readonly object locker = new object();
@@ -33,10 +35,14 @@ namespace StringUtility.Configuration
             lock (locker)
             {
                 MapperConfig = Load<MapperConfig>(MAPPER_CONFIG);
+
+                CtranConfig = Load<CtranConfig>(CTRAN_CONFIG);
             }
         }
 
         public MapperConfig MapperConfig { set; get; }
+
+        public CtranConfig CtranConfig { set; get; }
 
         private T Load<T>(string setting)
         {

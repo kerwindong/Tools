@@ -72,6 +72,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Configuration\ConfigManager.cs" />
+    <Compile Include="Configuration\CtranConfig.cs" />
     <Compile Include="Utility\GoogleProtoUtility.cs" />
     <Compile Include="Utility\CtranUtility.cs" />
     <Compile Include="Utility\Mapper.cs" />
@@ -115,6 +116,9 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <Content Include="Config\Mapper.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Ctran.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\Settings.settings">

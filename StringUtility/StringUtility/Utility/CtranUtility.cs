@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Text;
+using StringUtility.Configuration;
 
 namespace StringUtility.Utility
 {
@@ -78,6 +79,10 @@ namespace StringUtility.Utility
 
         private static readonly char[] CKEY_TAG_2_IDENTIFIER = new char[] { '/', 't', 'a', 'g', '>' };
 
+        private static readonly char[] CKEY_TAG_END_1_IDENTIFIER = new char[] { '<', '/', 't', 'a', 'g', '>' };
+
+        private static readonly char[] CKEY_TAG_END_2_IDENTIFIER = new char[] { '\n' };
+
         private const string CODE_FORMAT = "@resource.{0}";
 
         private const string KEY_VALUE_FORMAT = "\"{0}\":\"{1}\", ";
@@ -99,7 +104,10 @@ namespace StringUtility.Utility
         private List<CtranCoder> ctranCoders = default(List<CtranCoder>);
 
         private bool hasOtherInputs = false;
+
         private string otherInputsText = "";
+
+        private string ctranFormat = string.Empty;
 
         public bool HasOtherInputs
         {
@@ -124,6 +132,8 @@ namespace StringUtility.Utility
             hasOtherInputs = false;
 
             otherInputsText = string.Empty;
+
+            ctranFormat = ConfigManager.Get().CtranConfig.CtranFormatter.Value;
         }
 
         public string Main(string str, params string[] args)
@@ -159,6 +169,8 @@ namespace StringUtility.Utility
             var convertionBuilder = new StringBuilder();
 
             var jsonBuilder = new StringBuilder();
+
+            var formatBuilder = new StringBuilder();
 
             var start = 0;
 
@@ -220,6 +232,8 @@ namespace StringUtility.Utility
                     }
 
                     jsonBuilder.AppendLine(string.Format(KEY_VALUE_FORMAT, ctranCoder.Key, ctranCoder.Value));
+
+                    formatBuilder.AppendLine(string.Format(ctranFormat, ctranCoder.Key, ctranCoder.Value));
                 }
             }
 
@@ -277,6 +291,8 @@ namespace StringUtility.Utility
                     }
 
                     jsonBuilder.AppendLine(string.Format(KEY_VALUE_FORMAT, ctranCoder.Key, ctranCoder.Value));
+
+                    formatBuilder.AppendLine(string.Format(ctranFormat, ctranCoder.Key, ctranCoder.Value));
                 }
             }
 
@@ -284,11 +300,17 @@ namespace StringUtility.Utility
 
             var jsonOut = jsonBuilder.ToString();
 
-            if (!string.IsNullOrWhiteSpace(convertionOut) && !string.IsNullOrWhiteSpace(jsonOut))
+            var formatOut = formatBuilder.ToString();
+
+            if (!string.IsNullOrWhiteSpace(convertionOut) &&
+                !string.IsNullOrWhiteSpace(jsonOut) &&
+                !string.IsNullOrWhiteSpace(formatOut))
             {
                 builder.AppendLine(convertionOut);
                 builder.AppendLine("--------------------------------------------------------");
                 builder.AppendLine(jsonOut);
+                builder.AppendLine("--------------------------------------------------------");
+                builder.AppendLine(formatOut);
             }
 
             dataOut = builder.ToString();
@@ -454,7 +476,16 @@ namespace StringUtility.Utility
 
                                     if (cvalueBegin > 0)
                                     {
-                                        var cvalueEnd = LookForward(cvalueBegin, CVALUE_SURFIX_1_IDENTIFIER, CVALUE_SURFIX_1_IDENTIFIER.Length, ELEMENT_END) - 1;
+                                        var cvalueEnd = 0;
+
+                                        if (tagBegin > 0)
+                                        {
+                                            cvalueEnd = LookForward(cvalueBegin, CKEY_TAG_END_1_IDENTIFIER, CKEY_TAG_END_1_IDENTIFIER.Length, CKEY_TAG_END_2_IDENTIFIER) - CKEY_TAG_END_1_IDENTIFIER.Length;
+                                        }
+                                        else
+                                        {
+                                            cvalueEnd = LookForward(cvalueBegin, CVALUE_SURFIX_1_IDENTIFIER, CVALUE_SURFIX_1_IDENTIFIER.Length, ELEMENT_END) - 1;
+                                        }
 
                                         if (cvalueEnd > 0)
                                         {
