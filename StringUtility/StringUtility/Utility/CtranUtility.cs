@@ -69,7 +69,7 @@ namespace StringUtility.Utility
 
         private static readonly char[] CKEY_TAG_1_IDENTIFIER = new char[] { '<', 't', 'a', 'g' };
 
-        private static readonly char[] CKEY_PREFIX_1_IDENTIFIER = new char[] { ' ', 'k', 'e', 'y' };
+        private static readonly char[] CKEY_PREFIX_1_IDENTIFIER = new char[] { ' ', 'c', 'k', 'e', 'y' };
         private static readonly char[] CKEY_PREFIX_2_IDENTIFIER = new char[] { '=' };
         private static readonly char[] CKEY_PREFIX_3_IDENTIFIER = new char[] { '"' };
         private static readonly char[] CKEY_SURFIX_1_IDENTIFIER = new char[] { '"' };
@@ -369,21 +369,21 @@ namespace StringUtility.Utility
                                     convertionEnd = ckeyEnd + 1;
                                 }
 
-                                var inputValue1Begin = LookForward(inputPrefixBegin, CKEY_INPUT_VALUE_1_IDENTIFIER, CKEY_INPUT_VALUE_1_IDENTIFIER.Length, ELEMENT_END);
+                                var inputPlaceHolder1Begin = LookForward(inputPrefixBegin, CKEY_INPUT_PLACE_HOLDER_1_IDENTIFIER, CKEY_INPUT_PLACE_HOLDER_1_IDENTIFIER.Length, ELEMENT_END);
 
-                                if (inputValue1Begin > 0)
+                                if (inputPlaceHolder1Begin > 0)
                                 {
-                                    var inputValue2Begin = LookForward(inputValue1Begin, CKEY_INPUT_VALUE_2_IDENTIFIER, CKEY_INPUT_VALUE_2_IDENTIFIER.Length, ELEMENT_END);
+                                    var inputPlaceHolder2Begin = LookForward(inputPlaceHolder1Begin, CKEY_INPUT_PLACE_HOLDER_2_IDENTIFIER, CKEY_INPUT_PLACE_HOLDER_2_IDENTIFIER.Length, ELEMENT_END);
 
-                                    if (inputValue2Begin > 0)
+                                    if (inputPlaceHolder2Begin > 0)
                                     {
-                                        var cvalueBegin = LookForward(inputValue2Begin, CKEY_INPUT_VALUE_3_IDENTIFIER, CKEY_INPUT_VALUE_3_IDENTIFIER.Length, ELEMENT_END);
+                                        var cvalueBegin = LookForward(inputPlaceHolder2Begin, CKEY_INPUT_PLACE_HOLDER_3_IDENTIFIER, CKEY_INPUT_PLACE_HOLDER_3_IDENTIFIER.Length, ELEMENT_END);
 
                                         if (cvalueBegin > 0)
                                         {
-                                            var cvalueEnd = LookForward(cvalueBegin, CKEY_INPUT_VALUE_3_IDENTIFIER, CKEY_INPUT_VALUE_3_IDENTIFIER.Length, ELEMENT_END) - 1;
+                                            var cvalueEnd = LookForward(cvalueBegin, CKEY_INPUT_PLACE_HOLDER_3_IDENTIFIER, CKEY_INPUT_PLACE_HOLDER_3_IDENTIFIER.Length, ELEMENT_END) - 1;
 
-                                            convertionType = ConvertionType.InputValue;
+                                            convertionType = ConvertionType.InputPlaceHolder;
 
                                             ctranCoders.Add(new CtranCoder()
                                             {
@@ -405,21 +405,21 @@ namespace StringUtility.Utility
                                     }
                                 }
 
-                                var inputPlaceHolder1Begin = LookForward(inputPrefixBegin, CKEY_INPUT_PLACE_HOLDER_1_IDENTIFIER, CKEY_INPUT_PLACE_HOLDER_1_IDENTIFIER.Length, ELEMENT_END);
+                                var inputValue1Begin = LookForward(inputPrefixBegin, CKEY_INPUT_VALUE_1_IDENTIFIER, CKEY_INPUT_VALUE_1_IDENTIFIER.Length, ELEMENT_END);
 
-                                if (inputPlaceHolder1Begin > 0)
+                                if (inputPlaceHolder1Begin <= 0 && inputValue1Begin > 0)
                                 {
-                                    var inputPlaceHolder2Begin = LookForward(inputPlaceHolder1Begin, CKEY_INPUT_PLACE_HOLDER_2_IDENTIFIER, CKEY_INPUT_PLACE_HOLDER_2_IDENTIFIER.Length, ELEMENT_END);
+                                    var inputValue2Begin = LookForward(inputValue1Begin, CKEY_INPUT_VALUE_2_IDENTIFIER, CKEY_INPUT_VALUE_2_IDENTIFIER.Length, ELEMENT_END);
 
-                                    if (inputPlaceHolder2Begin > 0)
+                                    if (inputValue2Begin > 0)
                                     {
-                                        var cvalueBegin = LookForward(inputPlaceHolder2Begin, CKEY_INPUT_PLACE_HOLDER_3_IDENTIFIER, CKEY_INPUT_PLACE_HOLDER_3_IDENTIFIER.Length, ELEMENT_END);
+                                        var cvalueBegin = LookForward(inputValue2Begin, CKEY_INPUT_VALUE_3_IDENTIFIER, CKEY_INPUT_VALUE_3_IDENTIFIER.Length, ELEMENT_END);
 
                                         if (cvalueBegin > 0)
                                         {
-                                            var cvalueEnd = LookForward(cvalueBegin, CKEY_INPUT_PLACE_HOLDER_3_IDENTIFIER, CKEY_INPUT_PLACE_HOLDER_3_IDENTIFIER.Length, ELEMENT_END) - 1;
+                                            var cvalueEnd = LookForward(cvalueBegin, CKEY_INPUT_VALUE_3_IDENTIFIER, CKEY_INPUT_VALUE_3_IDENTIFIER.Length, ELEMENT_END) - 1;
 
-                                            convertionType = ConvertionType.InputPlaceHolder;
+                                            convertionType = ConvertionType.InputValue;
 
                                             ctranCoders.Add(new CtranCoder()
                                             {
