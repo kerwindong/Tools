@@ -21,6 +21,10 @@ namespace StringUtility.Utility
 
         private string excelFormat = string.Empty;
 
+        private string propertyFormat = string.Empty;
+
+        private string ctranFormat = string.Empty;
+
         public ExcelTranUtility()
         {
             name = CTRAN;
@@ -34,6 +38,10 @@ namespace StringUtility.Utility
             otherInputsText = string.Empty;
 
             excelFormat = ConfigManager.Get().CtranConfig.ExcelFormatter.Value;
+
+            propertyFormat = ConfigManager.Get().CtranConfig.PropertyFormatter.Value;
+
+            ctranFormat = ConfigManager.Get().CtranConfig.CtranFormatter.Value;
         }
 
         public string Main(string str, params string[] args)
@@ -119,13 +127,23 @@ namespace StringUtility.Utility
 
             var builder = new StringBuilder();
 
+            var propertyBuilder = new StringBuilder();
+
+            var ctranBuilder = new StringBuilder();
+
             if (languageDictionary.Count > 0)
             {
                 foreach (var languageName in languageDictionary.Keys)
                 {
                     builder.AppendLine();
 
+                    propertyBuilder.AppendLine();
+
                     builder.AppendLine(string.Format("{0}------------------------------", languageName));
+
+                    propertyBuilder.AppendLine(string.Format("{0}------------------------------", languageName));
+
+                    ctranBuilder.AppendLine(string.Format("{0}------------------------------", languageName));
 
                     var keyValues = languageDictionary[languageName];
 
@@ -134,14 +152,22 @@ namespace StringUtility.Utility
                         var value = keyValues[keyName];
 
                         builder.Append(string.Format(excelFormat, keyName, value));
+
+                        propertyBuilder.Append(string.Format(propertyFormat, keyName));
+
+                        ctranBuilder.Append(string.Format(ctranFormat, keyName, value));
                     }
 
                     builder.AppendLine();
+
+                    propertyBuilder.AppendLine();
+
+                    ctranBuilder.AppendLine();
                 }
                 
             }
 
-            return builder.ToString();
+            return builder.ToString() + propertyBuilder.ToString() + ctranBuilder.ToString();
         }
 
         public string Advance(string str)

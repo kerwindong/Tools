@@ -7,19 +7,16 @@ namespace StringUtility.Configuration
     public class CtranConfig
     {
         [XmlElement("ctranFormatter")]
-        public CtranFormatter CtranFormatter { set; get; }
+        public FormatterConfig CtranFormatter { set; get; }
 
         [XmlElement("excelFormatter")]
-        public ExcelFormatter ExcelFormatter { set; get; }
+        public FormatterConfig ExcelFormatter { set; get; }
+
+        [XmlElement("propertyFormatter")]
+        public FormatterConfig PropertyFormatter { set; get; }
     }
 
-    public class CtranFormatter
-    {
-        [XmlText]
-        public string Value { set; get; }
-    }
-
-    public class ExcelFormatter
+    public class FormatterConfig
     {
         [XmlText]
         public string Value { set; get; }
