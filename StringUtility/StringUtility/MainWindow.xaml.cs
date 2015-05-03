@@ -2,6 +2,7 @@
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+
 using StringUtility.Utility;
 
 namespace StringUtility
@@ -12,8 +13,11 @@ namespace StringUtility
     public partial class MainWindow : Window
     {
         private List<IUtility> Utilitys = new List<IUtility>();
+
         private IUtility Utility;
+
         private const string LENGTH_FORMAT = "{0} Bytes";
+
         private const int MAX_LENGTH = 10000000;
 
         public MainWindow()
@@ -38,7 +42,8 @@ namespace StringUtility
 
             OutLengthText.Content = string.Format(LENGTH_FORMAT, 0);
 
-            Utilitys.Add(new CtranUtility());
+            Utilitys.Add(new CtranUtility()); 
+            Utilitys.Add(new ExcelTranUtility());
             Utilitys.Add(new XmlUtility());
             Utilitys.Add(new GoogleProtoUtility());
             Utilitys.Add(new NoemaxUtility());
