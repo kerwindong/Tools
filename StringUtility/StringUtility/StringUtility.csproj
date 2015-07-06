@@ -73,6 +73,7 @@
     </ApplicationDefinition>
     <Compile Include="Configuration\ConfigManager.cs" />
     <Compile Include="Configuration\CtranConfig.cs" />
+    <Compile Include="Utility\DesUtility.cs" />
     <Compile Include="Utility\ExcelTranUtility.cs" />
     <Compile Include="Utility\GoogleProtoUtility.cs" />
     <Compile Include="Utility\CtranUtility.cs" />

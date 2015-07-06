@@ -1,0 +1,16 @@
+{
+  "name": "nw-demo",
+  "version": "0.0.1",
+  "main": "index.html",
+	"window": {
+		"debug": false,
+		"icon": "assets/img/c3po.png",
+		"toolbar": false,
+		"width": 900,
+		"height": 556,
+		"resizable": false,
+		"position": "center",
+		"frame": false,
+		"show": true
+	}
+}

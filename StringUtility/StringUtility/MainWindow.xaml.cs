@@ -48,6 +48,7 @@ namespace StringUtility
             Utilitys.Add(new GoogleProtoUtility());
             Utilitys.Add(new NoemaxUtility());
             Utilitys.Add(new Mapper());
+            Utilitys.Add(new DesUtility());
 
             foreach (var utility in Utilitys)
             {
