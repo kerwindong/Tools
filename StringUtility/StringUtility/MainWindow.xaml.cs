@@ -106,7 +106,16 @@ namespace StringUtility
 
         void AdvanceButton_Click(object sender, RoutedEventArgs e)
         {
-            OutputArea.Text = Utility.Advance(InputArea.Text);
+            if (Utility.HasOtherInputs && !string.IsNullOrWhiteSpace(OthersBox.Text))
+            {
+                var args = OthersBox.Text.Split(',');
+
+                OutputArea.Text = Utility.Advance(InputArea.Text, args);
+            }
+            else
+            {
+                OutputArea.Text = Utility.Advance(InputArea.Text);
+            }
         }
 
         void MainButton_Click(object sender, RoutedEventArgs e)

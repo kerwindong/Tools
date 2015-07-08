@@ -141,7 +141,7 @@ namespace StringUtility
             return dataOut;
         }
 
-        public string Advance(string str)
+        public string Advance(string str, params string[] args)
         {
             return "not implemented";
         }

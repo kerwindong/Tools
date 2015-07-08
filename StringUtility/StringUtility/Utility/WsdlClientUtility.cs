@@ -114,7 +114,7 @@ namespace StringUtility
             return string.Empty;
         }
 
-        public string Advance(string str)
+        public string Advance(string str, params string[] args)
         {
             return string.Empty;
         }

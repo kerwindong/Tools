@@ -82,7 +82,7 @@ namespace StringUtility
 			return c.ToString();
 		}
 
-		public string Advance(string str)
+        public string Advance(string str, params string[] args)
 		{
 			if (str == null)
 			{

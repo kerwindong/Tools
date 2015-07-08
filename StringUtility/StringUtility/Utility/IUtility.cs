@@ -5,7 +5,7 @@ namespace StringUtility
     {
         string Main(string str, params string[] args);
 
-        string Advance(string str);
+        string Advance(string str, params string[] args);
 
         string Name { set; get; }
 

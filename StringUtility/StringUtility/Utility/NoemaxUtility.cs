@@ -59,7 +59,7 @@ namespace StringUtility
             return str2;
         }
 
-        public string Advance(string str)
+        public string Advance(string str, params string[] args)
         {
             return "Not Implemented";
         }

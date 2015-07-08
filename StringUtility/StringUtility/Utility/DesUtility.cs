@@ -3,17 +3,20 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
+using StringUtility.Common.Text;
+using StringUtility.Configuration;
+
 namespace StringUtility.Utility
 {
     public class DesUtility : IUtility
     {
         private const string NAME = "DES unicode";
 
-        private const string MAIN_NAME = "Decryption";
+        private const string MAIN_NAME = "Encryption";
 
-        private const string ADVANCE_NAME = "";
+        private const string ADVANCE_NAME = "Decryption";
 
-        private const string DECRYPTION_KEY = "DecryptionKey";
+        private const string KEY_NAME_LABEL = "Key";
 
         private const string DEFAULT_DECRYPTION_KEY = "fltonline";
 
@@ -27,16 +30,66 @@ namespace StringUtility.Utility
 
             HasOtherInputs = true;
 
-            OtherInputsText = DECRYPTION_KEY;
+            OtherInputsText = KEY_NAME_LABEL;
         }
 
         public string Main(string str, params string[] args)
+        {
+            var encrypted = string.Empty;
+
+            var encryptor = DEFAULT_DECRYPTION_KEY;
+
+            if (ConfigManager.Get().DesConfig != null &&
+                ConfigManager.Get().DesConfig.DesPolicy != null &&
+                ConfigManager.Get().DesConfig.DesPolicy.Key.IsNullOrWhiteSpace() == false)
+            {
+                encryptor = ConfigManager.Get().DesConfig.DesPolicy.Key;
+            }
+
+            if (args != null && args.Length > 0 && args[0].IsNullOrWhiteSpace() == false)
+            {
+                encryptor = args[0];
+            }
+
+            if (str.IsNullOrWhiteSpace() == false)
+            {
+                var bytes = new PasswordDeriveBytes(encryptor, null).GetBytes(8);
+
+                using (var provider = new DESCryptoServiceProvider())
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        using (var cryptoStream = new CryptoStream(stream, provider.CreateEncryptor(bytes, bytes), CryptoStreamMode.Write))
+                        {
+                            var buffer = Encoding.Unicode.GetBytes(str);
+
+                            cryptoStream.Write(buffer, 0, buffer.Length);
+
+                            cryptoStream.FlushFinalBlock();
+
+                            encrypted = Convert.ToBase64String(stream.ToArray());
+                        }
+                    }
+                }
+            }
+
+            return encrypted;
+        }
+
+        public string Advance(string str, params string[] args)
         {
             var decrypted = string.Empty;
 
             var encryptor = DEFAULT_DECRYPTION_KEY;
 
-            if (args != null && args.Length > 0 && !string.IsNullOrWhiteSpace(args[0]))
+            if (ConfigManager.Get().DesConfig != null &&
+                ConfigManager.Get().DesConfig.DesPolicy != null &&
+                ConfigManager.Get().DesConfig.DesPolicy.Key.IsNullOrWhiteSpace() == false)
+            {
+                encryptor = ConfigManager.Get().DesConfig.DesPolicy.Key;
+            }
+
+            if (args != null && args.Length > 0 && args[0].IsNullOrWhiteSpace() == false)
             {
                 encryptor = args[0];
             }
@@ -63,11 +116,6 @@ namespace StringUtility.Utility
             }
 
             return decrypted;
-        }
-
-        public string Advance(string str)
-        {
-            return string.Empty;
         }
 
         public string Name { set; get; }

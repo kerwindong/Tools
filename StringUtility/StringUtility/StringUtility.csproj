@@ -71,8 +71,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\Text\StringExtension.cs" />
     <Compile Include="Configuration\ConfigManager.cs" />
     <Compile Include="Configuration\CtranConfig.cs" />
+    <Compile Include="Configuration\DesConfig.cs" />
     <Compile Include="Utility\DesUtility.cs" />
     <Compile Include="Utility\ExcelTranUtility.cs" />
     <Compile Include="Utility\GoogleProtoUtility.cs" />
@@ -123,6 +125,9 @@
     <Content Include="Config\Ctran.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Config\Des.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -132,6 +137,7 @@
   <ItemGroup>
     <Resource Include="1397202756_93323.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

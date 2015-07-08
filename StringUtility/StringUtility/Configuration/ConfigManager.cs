@@ -19,6 +19,8 @@ namespace StringUtility.Configuration
 
         private const string CTRAN_CONFIG = "CtranConfig";
 
+        private const string DES_CONFIG = "DesConfig";
+
         private string BaseDirectory = string.Empty;
 
         private static readonly object locker = new object();
@@ -37,6 +39,8 @@ namespace StringUtility.Configuration
                 MapperConfig = Load<MapperConfig>(MAPPER_CONFIG);
 
                 CtranConfig = Load<CtranConfig>(CTRAN_CONFIG);
+
+                DesConfig = Load<DesConfig>(DES_CONFIG);
             }
         }
 
@@ -44,18 +48,24 @@ namespace StringUtility.Configuration
 
         public CtranConfig CtranConfig { set; get; }
 
+        public DesConfig DesConfig { set; get; }
+
         private T Load<T>(string setting)
         {
             T c = default(T);
 
             var fileName = ConfigurationManager.AppSettings[setting];
+
             if (!string.IsNullOrWhiteSpace(fileName))
             {
                 var filePath = string.Concat(BaseDirectory, fileName);
+
                 var serializer = new XmlSerializer(typeof(T));
+
                 using (var reader = new StreamReader(filePath))
                 {
                     c = (T)serializer.Deserialize(reader);
+
                     reader.Close();
                 }
             }

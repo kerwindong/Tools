@@ -170,7 +170,7 @@ namespace StringUtility.Utility
             return builder.ToString() + propertyBuilder.ToString() + ctranBuilder.ToString();
         }
 
-        public string Advance(string str)
+        public string Advance(string str, params string[] args)
         {
             return "not implemented";
         }
