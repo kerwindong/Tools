@@ -49,6 +49,7 @@ namespace StringUtility
             Utilitys.Add(new NoemaxUtility());
             Utilitys.Add(new Mapper());
             Utilitys.Add(new DesUtility());
+            Utilitys.Add(new FormatUtility());
 
             foreach (var utility in Utilitys)
             {
