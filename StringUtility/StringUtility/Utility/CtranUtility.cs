@@ -200,7 +200,7 @@ namespace StringUtility.Utility
                     {
                         convertionBuilder.Append(data.Substring(0, ctranCoder.ValueBegin));
 
-                        convertionBuilder.Append(string.Format(CODE_FORMAT, ctranCoder.Key));
+                        convertionBuilder.Append(string.Format(CODE_FORMAT, ctranCoder.Key.Replace('.','_')));
 
                         convertionBuilder.Append(data.Substring(ctranCoder.ValueEnd, ctranCoder.ConvertionBegin - ctranCoder.ValueEnd));
 
@@ -219,7 +219,7 @@ namespace StringUtility.Utility
                             convertionBuilder.Append(data.Substring(ctranCoder.ConvertionEnd, ctranCoder.ValueBegin - ctranCoder.ConvertionEnd));
                         }
 
-                        convertionBuilder.Append(string.Format(CODE_FORMAT, ctranCoder.Key));
+                        convertionBuilder.Append(string.Format(CODE_FORMAT, ctranCoder.Key.Replace('.', '_')));
 
                         if (ctranCoder.ConvertionType == ConvertionType.Tag)
                         {
@@ -233,7 +233,7 @@ namespace StringUtility.Utility
 
                     jsonBuilder.AppendLine(string.Format(KEY_VALUE_FORMAT, ctranCoder.Key, ctranCoder.Value));
 
-                    formatBuilder.AppendLine(string.Format(ctranFormat, ctranCoder.Key, ctranCoder.Value));
+                    formatBuilder.AppendLine(string.Format(ctranFormat, ctranCoder.Key, ctranCoder.Value, ctranCoder.Key.Replace('.','_')));
                 }
             }
 
@@ -261,7 +261,7 @@ namespace StringUtility.Utility
                 {
                     if (ctranCoder.ValueBegin < ctranCoder.KeyBegin)
                     {
-                        convertionBuilder.Append(string.Format(CODE_FORMAT, ctranCoder.Key));
+                        convertionBuilder.Append(string.Format(CODE_FORMAT, ctranCoder.Key.Replace('.', '_')));
 
                         convertionBuilder.Append(data.Substring(ctranCoder.ValueEnd, ctranCoder.ConvertionBegin - ctranCoder.ValueEnd));
 
@@ -278,7 +278,7 @@ namespace StringUtility.Utility
                             convertionBuilder.Append(data.Substring(ctranCoder.ConvertionEnd, ctranCoder.ValueBegin - ctranCoder.ConvertionEnd));
                         }
 
-                        convertionBuilder.Append(string.Format(CODE_FORMAT, ctranCoder.Key));
+                        convertionBuilder.Append(string.Format(CODE_FORMAT, ctranCoder.Key.Replace('.', '_')));
 
                         if (ctranCoder.ConvertionType == ConvertionType.Tag)
                         {
@@ -292,7 +292,7 @@ namespace StringUtility.Utility
 
                     jsonBuilder.AppendLine(string.Format(KEY_VALUE_FORMAT, ctranCoder.Key, ctranCoder.Value));
 
-                    formatBuilder.AppendLine(string.Format(ctranFormat, ctranCoder.Key, ctranCoder.Value));
+                    formatBuilder.AppendLine(string.Format(ctranFormat, ctranCoder.Key, ctranCoder.Value, ctranCoder.Key.Replace('.', '_')));
                 }
             }
 
