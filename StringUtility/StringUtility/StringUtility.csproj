@@ -75,6 +75,7 @@
     <Compile Include="Configuration\ConfigManager.cs" />
     <Compile Include="Configuration\CtranConfig.cs" />
     <Compile Include="Configuration\DesConfig.cs" />
+    <Compile Include="Utility\MobileServerUtility.cs" />
     <Compile Include="Utility\DesUtility.cs" />
     <Compile Include="Utility\ExcelTranUtility.cs" />
     <Compile Include="Utility\FormatUtility.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Utility\NoemaxUtility.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Utility\DemoUtility.cs" />
     <Compile Include="Utility\WsdlClientUtility.cs" />
     <Compile Include="Utility\XmlUtility.cs" />
     <Page Include="MainWindow.xaml">

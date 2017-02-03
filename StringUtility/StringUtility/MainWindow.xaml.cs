@@ -50,6 +50,7 @@ namespace StringUtility
             Utilitys.Add(new Mapper());
             Utilitys.Add(new DesUtility());
             Utilitys.Add(new FormatUtility());
+            Utilitys.Add(new MobileServerUtility());
 
             foreach (var utility in Utilitys)
             {

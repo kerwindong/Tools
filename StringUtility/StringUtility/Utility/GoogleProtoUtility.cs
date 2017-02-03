@@ -6,8 +6,6 @@ namespace StringUtility
 {
     public class GoogleProtoUtility : IUtility
     {
-        private static readonly char[] IDENTIFIER_WRAPPER = new char[] { ' ', '\r', '\n', '\t' };
-        private static readonly char[] IDENTIFIER_PREFIX = new char[] { 'p', 'u', 'b', 'l', 'i', 'c' };
         private static readonly char[] IDENTIFIER_BREAKER = new char[] { '}', ';', '{' };
         private static readonly char[] IDENTIFIER_WRAPPER_BEGIN = new char[] { '{' };
         private static readonly char[] IDENTIFIER_WRAPPER_END = new char[] { '}' };
