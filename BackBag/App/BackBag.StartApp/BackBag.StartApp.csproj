@@ -59,10 +59,6 @@
       <Project>{cb7db123-f238-4ede-bd18-86836f9aa89c}</Project>
       <Name>BackBag.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BackBag.App\BackBag.App.csproj">
-      <Project>{f88332d4-a13a-4a7e-b638-35cbef244793}</Project>
-      <Name>BackBag.App</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="7z.dll">

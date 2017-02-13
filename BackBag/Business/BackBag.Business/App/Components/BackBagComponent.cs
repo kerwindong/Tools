@@ -241,6 +241,11 @@ namespace BackBag.Business.App.Components
 
                         installedApp.Icon = rootApp.Icon;
 
+                        if (BackBag == null)
+                        {
+                            BackBag = new BackBagModel();
+                        }
+
                         if (BackBag.InstalledApps == null)
                         {
                             BackBag.InstalledApps = new List<AppModel>();
