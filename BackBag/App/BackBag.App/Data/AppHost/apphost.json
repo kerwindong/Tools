@@ -1,7 +1,15 @@
 ﻿{
-  "apphost": "\\\\DST61570\\AppHost",
+  "apphost": "http://10.32.84.158:9600/apphost",
 
-  "apphostfile": "\\apphost.json",
+  "apphostfile": "/apphost.json",
+
+  "rootapp": {
+      "name": "Stormtrooper",
+      "version": 101.00, 
+      "path": "/stormtrooper", 
+      "zip": "/stormtrooper.7z", 
+      "startapp": "/Stormtrooper.exe" 
+  },
 
   "apps": []
 }

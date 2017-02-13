@@ -36,6 +36,8 @@ namespace BackBag.App
 
         private string appNameSelected = string.Empty;
 
+        private NotifyIcon notifyIcon = new NotifyIcon();
+
         public Main()
         {
             InitializeComponent();
@@ -47,9 +49,11 @@ namespace BackBag.App
         {
             Text = APP_NAME;
 
-            BackBagComponent.Instance.Init();
-
             var imageList = new ImageList();
+
+            this.Resize += Main_Resize;
+
+            BackBagComponent.Instance.Init();
 
             foreach (var app in BackBagComponent.Instance.BackBag.UninstalledApps)
             {
@@ -99,6 +103,29 @@ namespace BackBag.App
             UninstalledListView.MouseClick += ShowStripMenuForUninstalledView;
 
             MouseClick += HideStripMenu;
+        }
+
+        private void Main_Resize(object sender, EventArgs e)
+        {
+            if (FormWindowState.Minimized == this.WindowState)
+            {
+                notifyIcon.Icon = new Icon("Stormtrooper.ico");
+
+                notifyIcon.Text = "Stormtrooper";
+
+                notifyIcon.Visible = true;
+
+                notifyIcon.MouseDoubleClick += notifyIcon_MouseDoubleClick;
+
+                this.ShowInTaskbar = false;
+            }
+        }
+
+        public void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            notifyIcon.Visible = false;
+
+            this.WindowState = FormWindowState.Normal;
         }
 
         public void OpenApp(object sender, MouseEventArgs e)

@@ -18,6 +18,9 @@ namespace BackBag.Business.App.Entities
         [JsonProperty("path")]
         public string Path { set; get; }
 
+        [JsonProperty("zip")]
+        public string Zip { set; get; }
+
         [JsonProperty("startapp")]
         public string StartApp { set; get; }
 

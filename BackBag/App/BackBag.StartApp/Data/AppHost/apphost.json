@@ -1,0 +1,96 @@
+﻿{
+  "apphost": "http://10.32.84.158:9600/apphost",
+
+  "apphostfile": "/apphost.json", 
+
+  "rootapp": {
+      "name": "Stormtrooper",
+      "version": 101.00, 
+      "path": "/stormtrooper", 
+      "zip": "/stormtrooper.7z", 
+      "startapp": "/Stormtrooper.exe" 
+  },
+
+  "apps": [
+    {
+      "name": "StringUtility",
+      "version": 101.00, 
+      "path": "/stringutility", 
+      "zip": "/stringutility.7z", 
+      "startapp": "/StringUtility.exe",
+      "icon": "/icon.ico"
+    },
+    {
+      "name": "Beyond Compare 4",
+      "version": 100.00, 
+      "path": "/beyond compare 4", 
+      "zip": "/beyond compare 4.7z", 
+      "startapp": "/BCompare.exe",
+      "icon": "/icon.ico"
+    },
+    {
+      "name": "Snagit 11",
+      "version": 100.00, 
+      "path": "/snagit 11", 
+      "zip": "/snagit 11.7z", 
+      "startapp": "/Snagit32.exe",
+      "icon": "/icon.ico"
+    },
+    {
+      "name": "Reflector",
+      "version": 100.00, 
+      "path": "/reflector", 
+      "zip": "/reflector.7z", 
+      "startapp": "/Reflector.exe",
+      "icon": "/icon.ico"
+    },
+    {
+      "name": "SwitchHosts",
+      "version": 100.00, 
+      "path": "/switchhosts", 
+      "zip": "/switchhosts.7z", 
+      "startapp": "/SwitchHosts.exe",
+      "icon": "/icon.ico"
+    },
+    {
+      "name": "Replace Studio",
+      "version": 100.00, 
+      "path": "/replace studio", 
+      "zip": "/replace studio.7z", 
+      "startapp": "/ReplaceStudio32.exe",
+      "icon": "/icon.ico"
+    },
+    {
+      "name": "DebugDiag",
+      "version": 100.00, 
+      "path": "/debugdiag",
+      "zip": "/debugdiag.7z",  
+      "startapp": "/DebugDiag.Analysis.exe",
+      "icon": "/icon.ico"
+    },
+    {
+      "name": "Putty",
+      "version": 100.00, 
+      "path": "/putty", 
+      "zip": "/putty.7z", 
+      "startapp": "/Putty.exe",
+      "icon": "/icon.ico"
+    },
+    {
+      "name": "Filezilla",
+      "version": 100.00, 
+      "path": "/filezilla", 
+      "zip": "/filezilla.7z", 
+      "startapp": "/Filezilla.exe",
+      "icon": "/icon.ico"
+    },
+    {
+      "name": "BaijiEditor",
+      "version": 100.00, 
+      "path": "/baijieditor", 
+      "zip": "/baijieditor.7z", 
+      "startapp": "/BaijiEditor.exe",
+      "icon": "/icon.ico"
+    }
+  ]
+}

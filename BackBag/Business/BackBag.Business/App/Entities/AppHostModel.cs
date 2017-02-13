@@ -15,6 +15,9 @@ namespace BackBag.Business.App.Entities
         [JsonProperty("apphostfile")]
         public string AppHostFile { set; get; }
 
+        [JsonProperty("rootapp")]
+        public AppModel RootApp { set; get; }
+
         [JsonProperty("apps")]
         public List<AppModel> Apps { set; get; }
     }

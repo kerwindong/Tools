@@ -8,5 +8,10 @@ namespace BackBag.Common.Common
         {
             return string.Compare(source, target, StringComparison.OrdinalIgnoreCase) == 0;
         }
+
+        public static string ToLocal(this string file)
+        {
+            return "\\" + file.TrimStart('/');
+        }
     }
 }

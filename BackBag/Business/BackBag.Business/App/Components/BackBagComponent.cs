@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using BackBag.Business.App.Entities;
@@ -33,6 +34,53 @@ namespace BackBag.Business.App.Components
 
         }
 
+        public void InitRoot()
+        {
+            try
+            {
+                var apphostLocalFileRaw = File.ReadAllText(CommonEnvironment.BaseDirectory + APPHOST_LOCAL + APPHOST_LOCAL_FILE);
+
+                AppHost = NewtonJsonSerializer.Instance.Deserialize<AppHostModel>(apphostLocalFileRaw);
+            }
+            catch (Exception ex)
+            {
+                FileLogger.Instance.Log(ex);
+            }
+
+            try
+            {
+                var apphostRemoteFileRaw = string.Empty;
+
+                using (var client = new WebClient())
+                {
+                    apphostRemoteFileRaw = client.DownloadString(AppHost.AppHost + AppHost.AppHostFile);
+                }
+
+                AppHost = NewtonJsonSerializer.Instance.Deserialize<AppHostModel>(apphostRemoteFileRaw);
+
+                File.WriteAllText(CommonEnvironment.BaseDirectory + APPHOST_LOCAL + APPHOST_LOCAL_FILE, apphostRemoteFileRaw);
+            }
+            catch (Exception ex)
+            {
+                FileLogger.Instance.Log(ex);
+            }
+
+            try
+            {
+                var backbagRaw = File.ReadAllText(CommonEnvironment.BaseDirectory + BACKBAG_PATH + BACKBAG_PATH_FILE);
+
+                BackBag = NewtonJsonSerializer.Instance.Deserialize<BackBagModel>(backbagRaw);
+            }
+            catch (Exception ex)
+            {
+                FileLogger.Instance.Log(ex);
+            }
+
+            InitRootApp();
+
+            FlushBackBag();
+        }
+
         public void Init()
         {
             try
@@ -48,7 +96,12 @@ namespace BackBag.Business.App.Components
 
             try
             {
-                var apphostRemoteFileRaw = File.ReadAllText(AppHost.AppHost + AppHost.AppHostFile);
+                var apphostRemoteFileRaw = string.Empty;
+
+                using (var client = new WebClient())
+                {
+                    apphostRemoteFileRaw = client.DownloadString(AppHost.AppHost + AppHost.AppHostFile);
+                }
 
                 AppHost = NewtonJsonSerializer.Instance.Deserialize<AppHostModel>(apphostRemoteFileRaw);
 
@@ -71,8 +124,6 @@ namespace BackBag.Business.App.Components
             }
 
             InitApp();
-
-            FlushBackBag();
         }
 
         public Task<AppInstallationModel> GetInstallAppTask(string name)
@@ -101,7 +152,7 @@ namespace BackBag.Business.App.Components
 
                     if (BackBag != null && app != null)
                     {
-                        CopyTo(AppHost.AppHost + app.Path, CommonEnvironment.BaseDirectory + APPHOST_LOCAL + app.Path);
+                        CopyRemoteToLocal(AppHost.AppHost + app.Path + app.Zip, CommonEnvironment.BaseDirectory + APPHOST_LOCAL + app.Path.ToLocal() + app.Zip.ToLocal());
 
                         var installedApp = new AppModel();
 
@@ -153,9 +204,75 @@ namespace BackBag.Business.App.Components
             return task;
         }
 
+        private void InitRootApp()
+        {
+            if (AppHost != null && AppHost.RootApp != null)
+            {
+                var rootApp = AppHost.RootApp;
+
+                var isUpToDate = false;
+
+                if (BackBag != null && BackBag.InstalledApps != null && BackBag.InstalledApps.Count > 0)
+                {
+                    isUpToDate = BackBag.InstalledApps.Exists(d => d.Name.AreEqual(rootApp.Name) && d.Version >= rootApp.Version);
+                }
+
+                try
+                {
+                    if (!isUpToDate)
+                    {
+                        CopyRemoteToLocal(AppHost.AppHost + rootApp.Path + rootApp.Zip, CommonEnvironment.BaseDirectory + APPHOST_LOCAL + rootApp.Path.ToLocal() + rootApp.Zip.ToLocal());
+
+                        var appHostRemote = NewtonJsonSerializer.Instance.Serialize(AppHost);
+
+                        File.WriteAllText(CommonEnvironment.BaseDirectory + APPHOST_LOCAL + rootApp.Path.ToLocal() + APPHOST_LOCAL + APPHOST_LOCAL_FILE, appHostRemote);
+
+                        var installedApp = new AppModel();
+
+                        installedApp.Name = rootApp.Name;
+
+                        installedApp.Version = rootApp.Version;
+
+                        installedApp.Path = rootApp.Path;
+
+                        installedApp.Zip = rootApp.Zip;
+
+                        installedApp.StartApp = rootApp.StartApp;
+
+                        installedApp.Icon = rootApp.Icon;
+
+                        if (BackBag.InstalledApps == null)
+                        {
+                            BackBag.InstalledApps = new List<AppModel>();
+                        }
+
+                        if (BackBag.InstalledApps != null)
+                        {
+                            var installedAppCurrent = BackBag.InstalledApps.FirstOrDefault(d => d.Name.AreEqual(installedApp.Name));
+
+                            if (installedAppCurrent != null)
+                            {
+                                installedAppCurrent.Version = installedApp.Version;
+                            }
+                            else
+                            {
+                                BackBag.InstalledApps.Add(installedApp);
+                            }
+
+                            FlushBackBag();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    FileLogger.Instance.Log(ex);
+                }
+            }
+        }
+
         private void InitApp()
         {
-            if (BackBag != null && AppHost != null && AppHost != null && AppHost.Apps != null)
+            if (BackBag != null && AppHost != null && AppHost.Apps != null)
             {
                 if (BackBag.InstalledApps == null)
                 {
@@ -198,18 +315,18 @@ namespace BackBag.Business.App.Components
 
                             try
                             {
-                                var iconPath = CommonEnvironment.BaseDirectory + ICONS_LOCAL + app.Path;
+                                var iconPath = CommonEnvironment.BaseDirectory + ICONS_LOCAL + app.Path.ToLocal();
 
-                                var iconFilePath = CommonEnvironment.BaseDirectory + ICONS_LOCAL + app.Path + app.Icon;
+                                var iconFilePath = CommonEnvironment.BaseDirectory + ICONS_LOCAL + app.Path.ToLocal() + app.Icon.ToLocal();
 
                                 if (!Directory.Exists(iconPath))
                                 {
                                     Directory.CreateDirectory(iconPath);
                                 }
 
-                                if (!File.Exists(iconFilePath))
+                                using (var client = new WebClient())
                                 {
-                                    File.Copy(AppHost.AppHost + app.Path + app.Icon, iconFilePath);
+                                    client.DownloadFile(AppHost.AppHost + app.Path + app.Icon, iconFilePath);
                                 }
                             }
                             catch (Exception ex)
@@ -229,85 +346,21 @@ namespace BackBag.Business.App.Components
             File.WriteAllText(CommonEnvironment.BaseDirectory + BACKBAG_PATH + BACKBAG_PATH_FILE, backBagRaw);
         }
 
-        private void CopyTo(string source, string target)
+        private void CopyRemoteToLocal(string remoteAddress, string target)
         {
-            if (!Directory.Exists(source))
+            var dir = Path.GetDirectoryName(target);
+
+            if (!string.IsNullOrWhiteSpace(dir) && !Directory.Exists(dir))
             {
-                return;
+                Directory.CreateDirectory(dir);
             }
 
-            if (Directory.Exists(target))
+            using (var client = new WebClient())
             {
-                try
-                {
-                    Directory.Delete(target, true);
-                }
-                catch (Exception ex)
-                {
-                    FileLogger.Instance.Log(ex);
-                }
+                client.DownloadFile(remoteAddress, target);
             }
 
-            if (!Directory.Exists(target))
-            {
-                Directory.CreateDirectory(target);
-            }
-
-            if (Directory.Exists(source) && Directory.Exists(target))
-            {
-                var files = Directory.GetFiles(source);
-
-                var dirs = Directory.GetDirectories(source);
-
-                if (files.Length > 0)
-                {
-                    foreach (var file in files)
-                    {
-                        var fileName = Path.GetFileName(file);
-
-                        if (!string.IsNullOrWhiteSpace(fileName))
-                        {
-                            var targetFile = target + "\\" + fileName;
-
-                            if (File.Exists(targetFile))
-                            {
-                                try
-                                {
-                                    File.Copy(source + "\\" + fileName, targetFile, true);
-                                }
-                                catch (Exception ex)
-                                {
-                                    FileLogger.Instance.Log(ex);
-                                }
-                            }
-                            else
-                            {
-                                File.Copy(source + "\\" + fileName, targetFile);
-                            }
-                        }
-                    }
-                }
-
-                if (dirs.Length > 0)
-                {
-                    foreach (var dir in dirs)
-                    {
-                        var dirName = Path.GetFileName(dir);
-
-                        if (!string.IsNullOrWhiteSpace(dirName))
-                        {
-                            var targetDir = target + "\\" + dirName;
-
-                            if (!Directory.Exists(targetDir))
-                            {
-                                Directory.CreateDirectory(targetDir);
-                            }
-
-                            CopyTo(source + "\\" + dirName, targetDir);
-                        }
-                    }
-                }
-            }
+            SevenZipHelper.Decompress(target, dir);
         }
 
         #region Singleton
