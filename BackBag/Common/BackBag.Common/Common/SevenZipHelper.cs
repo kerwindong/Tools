@@ -1,4 +1,8 @@
 ﻿
+using System;
+using System.Diagnostics;
+using System.Text;
+using BackBag.Common.Log;
 using SevenZip;
 
 namespace BackBag.Common.Common
@@ -7,13 +11,19 @@ namespace BackBag.Common.Common
     {
         public static void Decompress(string inFile, string outFile)
         {
-            SevenZipExtractor.SetLibraryPath(CommonEnvironment.BaseDirectory + "\\7z.dll"); 
+            var processInfo = new ProcessStartInfo();
 
-            using (var tmp = new SevenZipExtractor(inFile))
+            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            processInfo.FileName = CommonEnvironment.BaseDirectory + "\\7z.exe";
+
+            processInfo.Arguments = string.Format(" x \"{0}\" -o\"{1}\" -aoa ", inFile, outFile);
+
+            using (var process = Process.Start(processInfo))
             {
-                for (int i = 0; i < tmp.ArchiveFileData.Count; i++)
+                if (process != null)
                 {
-                    tmp.ExtractFiles(outFile, tmp.ArchiveFileData[i].Index);
+                    process.WaitForExit();
                 }
             }
         }

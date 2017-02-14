@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -34,9 +35,13 @@ namespace BackBag.App
 
         private ContextMenuStrip stripMenu = new ContextMenuStrip();
 
-        private string appNameSelected = string.Empty;
-
         private NotifyIcon notifyIcon = new NotifyIcon();
+
+        private ImageList imageList = new ImageList();
+
+        private Point location = new Point();
+
+        private Size size = new Size();
 
         public Main()
         {
@@ -49,11 +54,13 @@ namespace BackBag.App
         {
             Text = APP_NAME;
 
-            var imageList = new ImageList();
+            this.Closing += Main_Closing;
 
-            this.Resize += Main_Resize;
+            this.Resize += Form_Resize;
 
             BackBagComponent.Instance.Init();
+
+            this.ShowInTaskbar = false;
 
             foreach (var app in BackBagComponent.Instance.BackBag.UninstalledApps)
             {
@@ -67,6 +74,8 @@ namespace BackBag.App
 
                 UninstalledListView.Items.Add(item);
             }
+
+            InitNotifyIcon();
 
             foreach (var app in BackBagComponent.Instance.BackBag.InstalledApps)
             {
@@ -105,27 +114,126 @@ namespace BackBag.App
             MouseClick += HideStripMenu;
         }
 
-        private void Main_Resize(object sender, EventArgs e)
+        private void Form_Resize(object sender, EventArgs e)
         {
-            if (FormWindowState.Minimized == this.WindowState)
+            if (WindowState == FormWindowState.Minimized)
             {
-                notifyIcon.Icon = new Icon("Stormtrooper.ico");
+                this.Hide();
 
-                notifyIcon.Text = "Stormtrooper";
-
-                notifyIcon.Visible = true;
-
-                notifyIcon.MouseDoubleClick += notifyIcon_MouseDoubleClick;
-
-                this.ShowInTaskbar = false;
+                ShowNotifyIcon();
             }
         }
 
-        public void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void Main_Closing(object sender, CancelEventArgs e)
         {
-            notifyIcon.Visible = false;
+            if (WindowState == FormWindowState.Normal)
+            {
+                e.Cancel = true;
 
-            this.WindowState = FormWindowState.Normal;
+                WindowState = FormWindowState.Minimized;
+            }
+        }
+
+        private void ShowNotifyIcon()
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                notifyIcon.Visible = true;
+
+                notifyIcon.BalloonTipText = "Stormtrooper";
+
+                notifyIcon.ShowBalloonTip(5);
+
+                InitNotifyIconData();
+            }
+        }
+
+        private void InitNotifyIconData()
+        {
+            var index = 0;
+
+            notifyIcon.ContextMenuStrip.Items.Clear();
+
+            foreach (var app in BackBagComponent.Instance.BackBag.InstalledApps)
+            {
+                var button = new ToolStripButton(app.Name, imageList.Images[app.Name]);
+
+                button.Name = app.Name;
+
+                button.Padding = new Padding(2, 2, 0, 2);
+
+                button.Click += (sender, args) =>
+                {
+                    var b = sender as ToolStripItem;
+
+                    if (b != null)
+                    {
+                        var a = BackBagComponent.Instance.BackBag.InstalledApps.FirstOrDefault(d => d.Name.AreEqual(b.Name));
+
+                        if (a != null)
+                        {
+                            var startInfo = new ProcessStartInfo(CommonEnvironment.BaseDirectory + BackBagComponent.APPHOST_LOCAL + a.Path + a.StartApp);
+
+                            startInfo.WindowStyle = ProcessWindowStyle.Normal;
+
+                            Process.Start(startInfo);
+                        }
+                    }
+                };
+
+                notifyIcon.ContextMenuStrip.Items.Insert(index, button);
+
+                index++;
+            }
+
+            if (notifyIcon.ContextMenuStrip.Items.Count > 0)
+            {
+                var separator = new ToolStripSeparator();
+
+                notifyIcon.ContextMenuStrip.Items.Add(separator);
+            }
+
+            var exitButton = new ToolStripButton();
+
+            exitButton.Text = "Exit";
+
+            exitButton.TextAlign = ContentAlignment.MiddleRight;
+
+            exitButton.Padding = new Padding(2, 2, 0, 2);
+
+            exitButton.Click += Exit;
+
+            notifyIcon.ContextMenuStrip.Items.Add(exitButton);
+        }
+
+        private void InitNotifyIcon()
+        {
+            notifyIcon.Icon = new Icon("Stormtrooper.ico");
+
+            notifyIcon.Text = "Stormtrooper";
+
+            notifyIcon.MouseClick += notifyIcon_MouseClick;
+
+            notifyIcon.ContextMenuStrip = new ContextMenuStrip();
+
+            notifyIcon.ContextMenuStrip.AutoSize = true;
+        }
+
+        public void Exit(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        public void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                notifyIcon.Visible = false;
+
+                this.Show();
+
+                WindowState = FormWindowState.Normal;
+            }
         }
 
         public void OpenApp(object sender, MouseEventArgs e)
@@ -183,8 +291,6 @@ namespace BackBag.App
 
             if (e.Button == MouseButtons.Right && appItem != null)
             {
-                appNameSelected = appItem.Name;
-
                 stripMenu.Hide();
 
                 stripMenu = new ContextMenuStrip();
@@ -290,36 +396,42 @@ namespace BackBag.App
         {
             stripMenu.Hide();
 
-            var items = InstalledListView.Items.Find(appNameSelected, false);
+            var items = InstalledListView.SelectedItems;
 
-            if (items.Length > 0)
+            if (items.Count > 0)
             {
-                items[0].Text = UPGRADING;
-
-                var task = BackBagComponent.Instance.GetInstallAppTask(appNameSelected);
-
-                task.ContinueWith(t =>
+                foreach (var o in items)
                 {
-                    var itemsInstalled = InstalledListView.Items.Find(appNameSelected, false);
+                    var listViewItem = o as ListViewItem;
 
-                    if (itemsInstalled.Length > 0)
+                    if (listViewItem != null)
                     {
-                        var itemInstalled = itemsInstalled[0];
+                        listViewItem.Text = UPGRADING;
 
-                        itemInstalled.Text = appNameSelected;
+                        var task = BackBagComponent.Instance.GetInstallAppTask(listViewItem.Name);
 
-                        if (t.Result.IsSuccess)
+                        task.ContinueWith(t =>
                         {
-                            itemInstalled.ForeColor = Color.Black;
+                            var itemsInstalled = InstalledListView.Items.Find(listViewItem.Name, false);
 
-                            itemInstalled.Text = itemInstalled.Name;
-                        }
+                            if (itemsInstalled.Length > 0)
+                            {
+                                var itemInstalled = itemsInstalled[0];
 
-                        appNameSelected = string.Empty;
+                                itemInstalled.Text = listViewItem.Name;
+
+                                if (t.Result.IsSuccess)
+                                {
+                                    itemInstalled.ForeColor = Color.Black;
+
+                                    itemInstalled.Text = itemInstalled.Name;
+                                }
+                            }
+                        }, TaskScheduler.FromCurrentSynchronizationContext());
+
+                        task.Start();
                     }
-                }, TaskScheduler.FromCurrentSynchronizationContext());
-
-                task.Start();
+                }
             }
         }
 
@@ -336,8 +448,6 @@ namespace BackBag.App
 
             if (e.Button == MouseButtons.Right && appItem != null)
             {
-                appNameSelected = appItem.Name;
-
                 stripMenu.Hide();
 
                 stripMenu = new ContextMenuStrip();
@@ -362,52 +472,60 @@ namespace BackBag.App
         {
             stripMenu.Hide();
 
-            var items = UninstalledListView.Items.Find(appNameSelected, false);
+            var items = UninstalledListView.SelectedItems;
 
-            if (items.Length > 0)
+            if (items.Count > 0)
             {
-                items[0].Text = INSTALLING;
-
-                var task = BackBagComponent.Instance.GetInstallAppTask(appNameSelected);
-
-                task.ContinueWith(t =>
+                foreach (var o in items)
                 {
-                    var itemsUninstall = UninstalledListView.Items.Find(appNameSelected, false);
+                    var listViewItem = o as ListViewItem;
 
-                    if (itemsUninstall.Length > 0)
+                    if (listViewItem != null)
                     {
-                        var itemUninstall = itemsUninstall[0];
+                        listViewItem.Text = INSTALLING;
 
-                        itemUninstall.Text = appNameSelected;
+                        var task = BackBagComponent.Instance.GetInstallAppTask(listViewItem.Name);
 
-                        if (t.Result.IsSuccess)
+                        task.ContinueWith(t =>
                         {
-                            var item = new ListViewItem(itemUninstall.Name, itemUninstall.Name);
+                            var itemsUninstall = UninstalledListView.Items.Find(listViewItem.Name, false);
 
-                            item.Name = itemUninstall.Name;
-
-                            var itemsInstalled = InstalledListView.Items.Find(itemUninstall.Name, false);
-
-                            if (itemsInstalled.Length > 0)
+                            if (itemsUninstall.Length > 0)
                             {
-                                var itemInstalled = itemsInstalled[0];
+                                var itemUninstall = itemsUninstall[0];
 
-                                itemInstalled.ForeColor = Color.Black;
+                                itemUninstall.Text = listViewItem.Name;
 
-                                itemInstalled.Text = itemUninstall.Name;
+                                if (t.Result.IsSuccess)
+                                {
+                                    var item = new ListViewItem(itemUninstall.Name, itemUninstall.Name);
+
+                                    item.Name = itemUninstall.Name;
+
+                                    var itemsInstalled = InstalledListView.Items.Find(itemUninstall.Name, false);
+
+                                    if (itemsInstalled.Length > 0)
+                                    {
+                                        var itemInstalled = itemsInstalled[0];
+
+                                        itemInstalled.ForeColor = Color.Black;
+
+                                        itemInstalled.Text = itemUninstall.Name;
+                                    }
+                                    else
+                                    {
+                                        InstalledListView.Items.Add(item);
+                                    }
+                                }
                             }
-                            else
-                            {
-                                InstalledListView.Items.Add(item);
-                            }
-                        }
+
+                        }, TaskScheduler.FromCurrentSynchronizationContext());
+
+                        task.Start();
                     }
+                }
 
-                    appNameSelected = string.Empty;
-
-                }, TaskScheduler.FromCurrentSynchronizationContext());
-
-                task.Start();
+                InitNotifyIcon();
             }
         }
     }

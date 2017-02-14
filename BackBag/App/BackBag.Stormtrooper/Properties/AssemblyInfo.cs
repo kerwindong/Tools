@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BackBag.StartApp")]
+[assembly: AssemblyTitle("BackBag.Stormtrooper")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("BackBag.StartApp")]
+[assembly: AssemblyProduct("BackBag.Stormtrooper")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d92ca176-2f88-43b3-8b77-e799f31391aa")]
+[assembly: Guid("e912b7a8-5968-4ff0-853e-5fee60a82ec2")]
 
 // Version information for an assembly consists of the following four values:
 //

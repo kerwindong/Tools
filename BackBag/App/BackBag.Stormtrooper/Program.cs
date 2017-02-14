@@ -1,26 +1,20 @@
-﻿
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
 using BackBag.Business.App.Components;
 using BackBag.Common.Common;
 
-namespace BackBag.StartApp
+namespace BackBag.Stormtrooper
 {
-    public class Program
+    static class Program
     {
-        [DllImport("kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
-
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        const int SW_HIDE = 0;
-        public static void Main(string[] args)
+        [STAThread]
+        static void Main()
         {
-            var handle = GetConsoleWindow();
+            Application.EnableVisualStyles();
 
-            ShowWindow(handle, SW_HIDE);
+            Application.SetCompatibleTextRenderingDefault(false);
 
             BackBagComponent.Instance.InitRoot();
 
