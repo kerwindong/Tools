@@ -31,7 +31,7 @@ namespace BackBag.Business.App.Components
 
         private BackBagComponent()
         {
-
+            BackBag = new BackBagModel();
         }
 
         public void InitRoot()

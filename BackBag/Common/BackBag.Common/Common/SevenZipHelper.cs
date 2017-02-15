@@ -1,9 +1,8 @@
 ﻿
 using System;
 using System.Diagnostics;
-using System.Text;
+
 using BackBag.Common.Log;
-using SevenZip;
 
 namespace BackBag.Common.Common
 {
@@ -23,9 +22,16 @@ namespace BackBag.Common.Common
             {
                 if (process != null)
                 {
+
+                    process.ErrorDataReceived += process_ErrorDataReceived;
                     process.WaitForExit();
                 }
             }
+        }
+
+        public static void process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            FileLogger.Instance.Log(new Exception(e.Data));
         }
     }
 }
