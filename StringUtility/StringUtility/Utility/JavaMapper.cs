@@ -1,34 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using StringUtility.Common.Text;
 using StringUtility.Configuration;
 
 namespace StringUtility.Utility
 {
-    public class MapperProperty
+    public class JavaMapperProperty
     {
         public string TypeName { set; get; }
 
         public string PropertyName { set; get; }
     }
 
-    public class Mapper : IUtility
+    public class JavaMapper : IUtility
     {
-        private static readonly char[] IDENTIFIER_BREAKER = new char[] { '}', ';', '{' };
+        private static readonly char[] IDENTIFIER_BREAKER = new char[] { '}', '{' };
         private static readonly char[] IDENTIFIER_WRAPPER_BEGIN = new char[] { '{' };
         private static readonly char[] IDENTIFIER_WRAPPER_END = new char[] { '}' };
+        private static readonly char[] SPLIT = new char[] { ';' };
+        private static readonly char[] SPACE = new char[] { ' ' };
+        private static readonly char[] NEWLINE = new char[] { '\n' };
 
         private static readonly char[] CLASS_IDENTIFIER = new char[] { 'c', 'l', 'a', 's', 's' };
-        private static readonly char[] PROPERTY_IDENTIFIER_SCOPE = new char[] { 'p', 'u', 'b', 'l', 'i', 'c' };
+        private static readonly char[] PROPERTY_IDENTIFIER_SCOPE = new char[] { 'p', 'r', 'i', 'v', 'a', 't', 'e' };
 
         private static readonly char[] PROTOCONTRACT_IDENTIFIER = new char[] { '[', 'P', 'r', 'o', 't', 'o', 'C', 'o', 'n', 't', 'r', 'a', 'c', 't', ']' };
 
         private const string TAB = "    ";
-        private const string MAPPER = "Mapper";
+        private const string MAPPER = "Java Mapper";
         private const string TARGET_CLASS_NAME = "Target name(class):";
-        private const string PROPERTY_MAPPER_FORMAT = "                target.{0} = source.{0};";
+        private const string PROPERTY_MAPPER_FORMAT = "                target.set{0}(source.get{0}());";
 
-        private const string PROPERTY_SETGET_FORMAT = "public {0} {1} {{ set; get; }}";
+        private const string PROPERTY_FORMAT = "        private {0} {1};";
+
+        private const string PROPERTY_SET_FORMAT = "        public void set{1}({0} {2})\n        {{\n            this.{2} = {2};\n        }}";
+
+        private const string PROPERTY_GET_FORMAT = "        public {0} get{1}()\n        {{\n            return {2};\n        }}";
 
         private string name;
 
@@ -46,8 +54,19 @@ namespace StringUtility.Utility
 
         private string mapperFormatterValue = string.Empty;
 
+        private string mapperFormatterValueClass = string.Empty;
+
         private bool hasOtherInputs = false;
         private string otherInputsText = "";
+
+        private static readonly Dictionary<string, string> typeMapper = new Dictionary<string, string>()
+        {
+            { "Long", "long" },
+
+            { "Integer", "int" },
+
+            { "Double", "double" }
+        }; 
 
         public bool HasOtherInputs
         {
@@ -61,15 +80,17 @@ namespace StringUtility.Utility
             set { otherInputsText = value; }
         }
 
-        public Mapper()
+        public JavaMapper()
         {
             name = MAPPER;
 
-            MainName = "Generate Code";
+            MainName = "Generate Java Code";
 
             AdvanceName = "";
 
-            mapperFormatterValue = ConfigManager.Get().MapperConfig.MapperFormatter.Find(d => d.Type == "C#").Value;
+            mapperFormatterValue = ConfigManager.Get().MapperConfig.MapperFormatter.Find(d => d.Type == "Java").Value;
+
+            mapperFormatterValueClass = ConfigManager.Get().MapperConfig.MapperFormatter.Find(d => d.Type == "JavaClass").Value;
 
             hasOtherInputs = true;
 
@@ -109,11 +130,38 @@ namespace StringUtility.Utility
                 lookForwardIndex++;
             }
 
+            var classBuilder = new StringBuilder();
+
+            foreach (var propertyName in propertyNames)
+            {
+                classBuilder.AppendLine(string.Format(PROPERTY_FORMAT, propertyName.TypeName, propertyName.PropertyName));
+                classBuilder.AppendLine();
+            }
+
+            foreach (var propertyName in propertyNames)
+            {
+                classBuilder.AppendLine(string.Format(PROPERTY_GET_FORMAT, propertyName.TypeName, Upper(propertyName.PropertyName), propertyName.PropertyName));
+                classBuilder.AppendLine();
+
+                classBuilder.AppendLine(string.Format(PROPERTY_SET_FORMAT, propertyName.TypeName, Upper(propertyName.PropertyName), propertyName.PropertyName));
+                classBuilder.AppendLine();
+            }
+
+            var classRaw = string.Format(mapperFormatterValueClass, className, classBuilder.ToString());
+
+            builder.AppendLine(classRaw);
+
+            builder.AppendLine();
+            builder.AppendLine("----------------------------");
+            builder.AppendLine();
+
+            // Mapper 
+
             var mapperBuilder = new StringBuilder();
 
             foreach (var propertyName in propertyNames)
             {
-                mapperBuilder.AppendLine(string.Format(PROPERTY_MAPPER_FORMAT, propertyName.PropertyName));
+                mapperBuilder.AppendLine(string.Format(PROPERTY_MAPPER_FORMAT, Upper(propertyName.PropertyName)));
             }
 
             var targetClassName = "Target_" + className;
@@ -127,15 +175,7 @@ namespace StringUtility.Utility
 
             builder.AppendLine(mapper);
 
-            builder.AppendLine();
-            builder.AppendLine("----------------------------");
-            builder.AppendLine();
-
-            foreach (var propertyName in propertyNames)
-            {
-                builder.AppendLine(string.Format(PROPERTY_SETGET_FORMAT, propertyName.TypeName, propertyName.PropertyName));
-                builder.AppendLine();
-            }
+            // Out 
 
             dataOut = builder.ToString();
 
@@ -190,11 +230,11 @@ namespace StringUtility.Utility
         {
             if (length >= startIndex + PROPERTY_IDENTIFIER_SCOPE.Length)
             {
-                int propertyNameStart = LookForward(startIndex, PROPERTY_IDENTIFIER_SCOPE, 6, IDENTIFIER_BREAKER);
+                int propertyNameStart = LookForward(startIndex, PROPERTY_IDENTIFIER_SCOPE, 7, IDENTIFIER_BREAKER);
 
                 if (propertyNameStart >= 0)
                 {
-                    int wrapperStart = LookForward(startIndex, IDENTIFIER_WRAPPER_BEGIN, 1, IDENTIFIER_WRAPPER_END);
+                    int wrapperStart = LookForward(startIndex, SPLIT, 1, NEWLINE);
 
                     if (wrapperStart > propertyNameStart)
                     {
@@ -207,7 +247,7 @@ namespace StringUtility.Utility
                             propertyNames.Add(new MapperProperty()
                             {
                                 PropertyName = propertyNameFulls[1].Trim(),
-                                TypeName = propertyNameFulls[0].Trim()
+                                TypeName = TypeConvert(propertyNameFulls[0].Trim())
                             });
                         }
 
@@ -325,6 +365,26 @@ namespace StringUtility.Utility
                 currentIndex++;
             }
             return -1;
+        }
+
+        private string Upper(string source)
+        {
+            if (!source.IsNullOrWhiteSpace())
+            {
+                return source[0].ToString().ToUpper() + source.Substring(1);
+            }
+
+            return source;
+        }
+
+        private string TypeConvert(string source)
+        {
+            if (!source.IsNullOrWhiteSpace() && typeMapper.ContainsKey(source))
+            {
+                return typeMapper[source];
+            }
+
+            return source;
         }
     }
 }

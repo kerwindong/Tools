@@ -75,6 +75,7 @@
     <Compile Include="Configuration\ConfigManager.cs" />
     <Compile Include="Configuration\CtranConfig.cs" />
     <Compile Include="Configuration\DesConfig.cs" />
+    <Compile Include="Utility\JavaMapper.cs" />
     <Compile Include="Utility\MobileServerUtility.cs" />
     <Compile Include="Utility\DesUtility.cs" />
     <Compile Include="Utility\ExcelTranUtility.cs" />
