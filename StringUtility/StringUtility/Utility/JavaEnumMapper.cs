@@ -1,43 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using StringUtility.Common.Text;
 using StringUtility.Configuration;
 
 namespace StringUtility.Utility
 {
-    public class JavaMapperProperty
+    public class JavaEnumMapperProperty
     {
         public string TypeName { set; get; }
 
         public string PropertyName { set; get; }
     }
 
-    public class JavaMapper : IUtility
+    public class JavaEnumMapper : IUtility
     {
-        private static readonly char[] IDENTIFIER_BREAKER = new char[] { '}', '{' };
+        private static readonly char[] IDENTIFIER_BREAKER = new char[] { '\n' };
         private static readonly char[] IDENTIFIER_WRAPPER_BEGIN = new char[] { '{' };
         private static readonly char[] IDENTIFIER_WRAPPER_END = new char[] { '}' };
+        private static readonly char[] ENUM_WRAPPER_END = new char[] { ')' };
         private static readonly char[] SPLIT = new char[] { ';' };
         private static readonly char[] SPACE = new char[] { ' ' };
         private static readonly char[] NEWLINE = new char[] { '\n' };
 
-        private static readonly char[] CLASS_IDENTIFIER = new char[] { 'c', 'l', 'a', 's', 's' };
-        private static readonly char[] PROPERTY_IDENTIFIER_SCOPE = new char[] { 'p', 'r', 'i', 'v', 'a', 't', 'e' };
+        private static readonly char[] ENUM_IDENTIFIER = new char[] { 'e', 'n', 'u', 'm' };
+        private static readonly char[] PROPERTY_IDENTIFIER_SCOPE = new char[] { '\n' };
 
         private static readonly char[] PROTOCONTRACT_IDENTIFIER = new char[] { '[', 'P', 'r', 'o', 't', 'o', 'C', 'o', 'n', 't', 'r', 'a', 'c', 't', ']' };
 
         private const string TAB = "    ";
-        private const string MAPPER = "Java Bean Mapper";
-        private const string TARGET_CLASS_NAME = "Target Bean:";
-        private const string PROPERTY_MAPPER_FORMAT_TARGET = "                target.set{0}(source.get{0}());";
-        private const string PROPERTY_MAPPER_FORMAT_SOURCE = "                source.set{0}(target.get{0}());";
+        private const string MAPPER = "Java Enum With Integer";
+        private const string TARGET_CLASS_NAME = "";
 
-        private const string PROPERTY_FORMAT = "        private {0} {1};";
-
-        private const string PROPERTY_SET_FORMAT = "        public void set{1}({0} {2})\n        {{\n            this.{2} = {2};\n        }}";
-
-        private const string PROPERTY_GET_FORMAT = "        public {0} get{1}()\n        {{\n            return {2};\n        }}";
+        private const string PROPERTY_FORMAT = "        {1}({0}){2}";
 
         private string name;
 
@@ -55,8 +52,6 @@ namespace StringUtility.Utility
 
         private string mapperFormatterValue = string.Empty;
 
-        private string mapperFormatterValueClass = string.Empty;
-
         private bool hasOtherInputs = false;
         private string otherInputsText = "";
 
@@ -67,7 +62,7 @@ namespace StringUtility.Utility
             { "Integer", "int" },
 
             { "Double", "double" }
-        }; 
+        };
 
         public bool HasOtherInputs
         {
@@ -81,27 +76,23 @@ namespace StringUtility.Utility
             set { otherInputsText = value; }
         }
 
-        public JavaMapper()
+        public JavaEnumMapper()
         {
             name = MAPPER;
 
-            MainName = "Generate Bean & Mapper";
+            MainName = "Generate Code";
 
             AdvanceName = "";
 
-            mapperFormatterValue = ConfigManager.Get().MapperConfig.MapperFormatter.Find(d => d.Type == "Java").Value;
+            mapperFormatterValue = ConfigManager.Get().MapperConfig.MapperFormatter.Find(d => d.Type == "JavaEnum").Value;
 
-            mapperFormatterValueClass = ConfigManager.Get().MapperConfig.MapperFormatter.Find(d => d.Type == "JavaClass").Value;
-
-            hasOtherInputs = true;
+            hasOtherInputs = false;
 
             otherInputsText = TARGET_CLASS_NAME;
         }
 
         public string Main(string str, params string[] args)
         {
-            if (string.IsNullOrWhiteSpace(str)) return string.Empty;
-
             data = string.Empty;
             dataOut = string.Empty;
 
@@ -126,64 +117,65 @@ namespace StringUtility.Utility
 
                 lookForwardIndex = GetClassName(lookForwardIndex);
 
+                if (!className.IsNullOrWhiteSpace())
+                {
+                    break;
+                }
+
+                lookForwardIndex++;
+            }
+
+            while (true)
+            {
+                if (lookForwardIndex >= length)
+                {
+                    break;
+                }
+
                 lookForwardIndex = GetPropertyName(lookForwardIndex);
 
                 lookForwardIndex++;
             }
 
-            var targetClassName = string.Empty;
-
-            if (args != null && args.Length > 0)
-            {
-                targetClassName = args[0];
-            }
-
-            if (targetClassName.IsNullOrWhiteSpace())
-            {
-                targetClassName = className.TrimEnd("Model".ToCharArray()) + "Model";
-            }
-
             var classBuilder = new StringBuilder();
 
-            foreach (var propertyName in propertyNames)
+            if (!propertyNames.Any())
             {
-                classBuilder.AppendLine(string.Format(PROPERTY_FORMAT, propertyName.TypeName, propertyName.PropertyName));
-                classBuilder.AppendLine();
+                propertyNames = new List<MapperProperty>()
+                {
+                    new MapperProperty()
+                    {
+                        PropertyName = "ENUM_KEY",
+
+                        TypeName = "0"
+                    }
+                };
             }
 
-            foreach (var propertyName in propertyNames)
+            for (var i = 0; i < propertyNames.Count; i++)
             {
-                classBuilder.AppendLine(string.Format(PROPERTY_GET_FORMAT, propertyName.TypeName, Upper(propertyName.PropertyName), propertyName.PropertyName));
-                classBuilder.AppendLine();
+                var propertyName = propertyNames[i];
 
-                classBuilder.AppendLine(string.Format(PROPERTY_SET_FORMAT, propertyName.TypeName, Upper(propertyName.PropertyName), propertyName.PropertyName));
-                classBuilder.AppendLine();
+                var isLast = i + 1 == propertyNames.Count;
+
+                classBuilder.AppendLine(string.Format(PROPERTY_FORMAT, propertyName.TypeName, propertyName.PropertyName.ToUpper(), isLast ? ";" : ","));
+
+                if (!isLast)
+                {
+                    classBuilder.AppendLine();
+                }
             }
 
-            var classRaw = string.Format(mapperFormatterValueClass, targetClassName, classBuilder.ToString());
+            if (className.IsNullOrWhiteSpace())
+            {
+                className = "EnumName";
+            }
+
+            var classRaw = string.Format(mapperFormatterValue, className, classBuilder.ToString());
 
             builder.AppendLine(classRaw);
 
             builder.AppendLine();
-            builder.AppendLine("----------------------------");
-            builder.AppendLine();
-
-            // Mapper 
-
-            var mapperBuilder = new StringBuilder();
-
-            var mapperBuilderSource = new StringBuilder();
-
-            foreach (var propertyName in propertyNames)
-            {
-                mapperBuilder.AppendLine(string.Format(PROPERTY_MAPPER_FORMAT_SOURCE, Upper(propertyName.PropertyName)));
-
-                mapperBuilderSource.AppendLine(string.Format(PROPERTY_MAPPER_FORMAT_TARGET, Upper(propertyName.PropertyName)));
-            }
-
-            var mapper = string.Format(mapperFormatterValue, className, targetClassName, mapperBuilder.ToString(), mapperBuilderSource.ToString());
-
-            builder.AppendLine(mapper);
 
             // Out 
 
@@ -209,13 +201,13 @@ namespace StringUtility.Utility
 
         private int GetClassName(int startIndex)
         {
-            if (length >= startIndex + CLASS_IDENTIFIER.Length)
+            if (length >= startIndex + ENUM_IDENTIFIER.Length)
             {
-                int classNameStart = LookForward(startIndex, CLASS_IDENTIFIER, 5, IDENTIFIER_BREAKER);
+                int classNameStart = LookForward(startIndex, ENUM_IDENTIFIER, ENUM_IDENTIFIER.Length, SPACE);
 
                 if (classNameStart >= 0)
                 {
-                    int wrapperStart = LookForward(startIndex, IDENTIFIER_WRAPPER_BEGIN, 1, IDENTIFIER_WRAPPER_END);
+                    int wrapperStart = LookForward(startIndex, NEWLINE, NEWLINE.Length, IDENTIFIER_WRAPPER_BEGIN);
 
                     if (wrapperStart > classNameStart)
                     {
@@ -238,26 +230,27 @@ namespace StringUtility.Utility
 
         private int GetPropertyName(int startIndex)
         {
-            if (length >= startIndex + PROPERTY_IDENTIFIER_SCOPE.Length)
+            if (length >= startIndex + NEWLINE.Length)
             {
-                int propertyNameStart = LookForward(startIndex, PROPERTY_IDENTIFIER_SCOPE, 7, IDENTIFIER_BREAKER);
+                int propertyNameStart = LookForward(startIndex, NEWLINE, NEWLINE.Length, SPACE);
 
                 if (propertyNameStart >= 0)
                 {
-                    int wrapperStart = LookForward(startIndex, SPLIT, 1, NEWLINE);
+                    int wrapperStart = LookForward(startIndex, ENUM_WRAPPER_END, 1, new[] { ';', ',' });
 
                     if (wrapperStart > propertyNameStart)
                     {
                         var propertyNameFull = data.Substring(propertyNameStart, wrapperStart - propertyNameStart - 1).Trim();
 
-                        var propertyNameFulls = propertyNameFull.Split(' ');
+                        var propertyNameFulls = propertyNameFull.Split('(');
 
                         if (propertyNameFulls.Length >= 1)
                         {
                             propertyNames.Add(new MapperProperty()
                             {
-                                PropertyName = propertyNameFulls[1].Trim(),
-                                TypeName = TypeConvert(propertyNameFulls[0].Trim())
+                                PropertyName = propertyNameFulls[0].Trim(),
+
+                                TypeName = propertyNameFulls[1].TrimEnd(';', ')')
                             });
                         }
 

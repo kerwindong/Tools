@@ -75,6 +75,7 @@
     <Compile Include="Configuration\ConfigManager.cs" />
     <Compile Include="Configuration\CtranConfig.cs" />
     <Compile Include="Configuration\DesConfig.cs" />
+    <Compile Include="Utility\JavaEnumMapper.cs" />
     <Compile Include="Utility\JavaMapper.cs" />
     <Compile Include="Utility\MobileServerUtility.cs" />
     <Compile Include="Utility\DesUtility.cs" />
@@ -125,6 +126,7 @@
     <None Include="app.config" />
     <Content Include="Config\Mapper.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Config\Ctran.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

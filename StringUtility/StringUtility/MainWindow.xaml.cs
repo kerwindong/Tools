@@ -48,7 +48,8 @@ namespace StringUtility
             Utilitys.Add(new GoogleProtoUtility());
             Utilitys.Add(new NoemaxUtility());
             Utilitys.Add(new Mapper());
-            Utilitys.Add(new JavaMapper()); 
+            Utilitys.Add(new JavaMapper());
+            Utilitys.Add(new JavaEnumMapper()); 
             Utilitys.Add(new DesUtility());
             Utilitys.Add(new FormatUtility());
             Utilitys.Add(new MobileServerUtility());
