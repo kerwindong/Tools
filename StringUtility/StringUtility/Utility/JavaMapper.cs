@@ -130,6 +130,13 @@ namespace StringUtility.Utility
                 lookForwardIndex++;
             }
 
+            var targetClassName = "Target_" + className;
+
+            if (args != null && args.Length > 0)
+            {
+                targetClassName = args[0];
+            }
+
             var classBuilder = new StringBuilder();
 
             foreach (var propertyName in propertyNames)
@@ -147,7 +154,7 @@ namespace StringUtility.Utility
                 classBuilder.AppendLine();
             }
 
-            var classRaw = string.Format(mapperFormatterValueClass, className, classBuilder.ToString());
+            var classRaw = string.Format(mapperFormatterValueClass, targetClassName, classBuilder.ToString());
 
             builder.AppendLine(classRaw);
 
@@ -162,13 +169,6 @@ namespace StringUtility.Utility
             foreach (var propertyName in propertyNames)
             {
                 mapperBuilder.AppendLine(string.Format(PROPERTY_MAPPER_FORMAT, Upper(propertyName.PropertyName)));
-            }
-
-            var targetClassName = "Target_" + className;
-
-            if (args != null && args.Length > 0)
-            {
-                targetClassName = args[0];
             }
 
             var mapper = string.Format(mapperFormatterValue, className, targetClassName, mapperBuilder.ToString());
